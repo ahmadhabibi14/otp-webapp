@@ -2,14 +2,17 @@ version: "3.9"
 
 services:
   redis:
-    image: redis:7.2-alpine
+    image: redis
     container_name: redis-otp
     ports:
       - 6379:6379
     expose:
       - 6379
+    volumes:
+      - ./_docker-data/redis:/data
+      - ./configs/redis.conf:/usr/local/etc/redis/redis.conf
     networks:
-      - otp-network
+      - otp-webapp-network
   mailhog:
     image: mailhog/mailhog
     container_name: mailhog-otp
@@ -20,6 +23,6 @@ services:
       - 1025
       - 8025
     networks:
-      - otp-network
+      - otp-webapp-network
 networks:
-  otp-network:
+  otp-webapp-network:
