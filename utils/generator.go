@@ -2,20 +2,27 @@ package utils
 
 import (
 	"encoding/base64"
-	"fmt"
-	"math/rand"
+	"math/big"
+	"strconv"
 	"strings"
 
 	crand "crypto/rand"
 )
 
-func GenerateOTP() string {
-	_1 := rand.Intn(10)
-	_2 := rand.Intn(10)
-	_3 := rand.Intn(10)
-	_4 := rand.Intn(10)
+func GenerateOTP(digits int) string {
+	otpNumbers := make([]int, 0)
 
-	otp := fmt.Sprintf("%d%d%d%d", _1, _2, _3, _4)
+	for i := 0; i < digits; i++ {
+		rnum, _ := crand.Int(crand.Reader, big.NewInt(9))
+		otpNumbers = append(otpNumbers, int(rnum.Int64()))
+	}
+
+	strNumbers := make([]string, len(otpNumbers))
+	for i, num := range otpNumbers {
+		strNumbers[i] = strconv.Itoa(num)
+	}
+
+	otp := strings.Join(strNumbers, "")
 
 	return otp
 }

@@ -9,7 +9,7 @@ import (
 
 func (a *Handler) GetOTP(c *fiber.Ctx) error {
 	key := utils.GenerateRandomString(30)
-	otp := utils.GenerateOTP()
+	otp := utils.GenerateOTP(4)
 	expire := 2 * time.Minute
 
 	err := a.Redis.Set(key, otp, expire).Err()
