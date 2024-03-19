@@ -1,48 +1,36 @@
 package api
 
 import (
-	"log"
+	"otp-webapp/utils"
+	"time"
 
-	"github.com/go-redis/redis"
 	"github.com/gofiber/fiber/v2"
 )
 
 func (a *Handler) GetOTP(c *fiber.Ctx) error {
-	client := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
-		Password: "",
-		DB: 0,
-	})
+	key := utils.GenerateRandomString(30)
+	otp := utils.GenerateOTP()
+	expire := 2 * time.Minute
 
-	_, err := client.Ping().Result()
+	err := a.Redis.Set(key, otp, expire).Err()
 	if err != nil {
-		log.Println("failed to connect redis:", err)
-	} else {
-		log.Println("connected to redis")
+		response := NewHTTPResponse(fiber.StatusInternalServerError, err.Error(), "")
+		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
 
-	// Set key value pair
-	err = client.Set("name", "Habibi", 0).Err()
+	err = a.Mailer.SendOTP("habi@ternaklinux.com", otp)
 	if err != nil {
-		log.Println("failed to set new value:", err)
-	}
-	
-	// Retrieve a value for a given key
-	name, err := client.Get("name").Result()
-	if err != nil {
-		log.Println("key is empty:", err)
+		a.Log.Error().Str("error", err.Error()).Msg("failed to send otp to email")
 	}
 
-	// It must be empty
-	age, err := client.Get("age").Result()
-	if err != nil {
-		log.Println("key is empty:", err)
+	var data = struct {
+		Msg      string `json:"message"`
+		Key			string `json:"key"`
+	}{
+		Msg: "OTP sent to your email",
+		Key: key,
 	}
 
-	log.Println("name \t:", name)
-	log.Println("age \t:", age)
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"test": "ok",		
-	})
+	response := NewHTTPResponse(fiber.StatusOK, "", data)
+	return c.Status(fiber.StatusOK).JSON(response)
 }

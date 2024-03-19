@@ -10,4 +10,5 @@ func ApiRoutes(app *fiber.App, apis *api.Handler) {
 	api := app.Group("/api")
 
 	api.Post("/get-otp", apis.GetOTP)
+	api.Post("/send-otp", apis.SendOTP)
 }

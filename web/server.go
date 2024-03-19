@@ -30,6 +30,13 @@ func NewWebServer(cfg configs.WebConf, lg *zerolog.Logger) *WebServer {
 
 func (w *WebServer) Start() {
 	mlr := mailer.NewMailer(w.Log)
+	rd := configs.NewRedisClient()
+
+	_, err := rd.Ping().Result()
+	if err != nil {
+		w.Log.Error().Str("error", err.Error()).Msg("failed to connect redis")
+	}
+
 	engine := html.New("./views", ".html")
 	app := fiber.New(fiber.Config{
 		AppName: w.AppName,
@@ -46,6 +53,7 @@ func (w *WebServer) Start() {
 	apiHandler := &api.Handler{
 		Log: w.Log,
 		Mailer: mlr,
+		Redis: rd,
 	}
 	pageHandler := &page.Handler{
 		Log: w.Log,

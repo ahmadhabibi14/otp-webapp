@@ -25,8 +25,12 @@ func NewMailer(l *zerolog.Logger) Mailer {
 func (m *Mailer) SendOTP(email, otp string) error {
 	return m.SendMailFunc(
 		map[string]string{email: ``},
-		`OTP Code`,
-		`OTP Code is `+otp,
-		`<p>OTP Code is `+otp+`</p>`,
+		`OTP Code Authentication`,
+		`Your OTP code is `+otp+`
+
+		Please use this OTP within the next 2 minutes to complete your authentication process. After this time, the OTP will expire, and you will need to request a new one.
+		`,
+		`<p>Your OTP code is <b>`+otp+`</b></p>
+		<p>Please use this OTP within the next 2 minutes to complete your authentication process. After this time, the OTP will expire, and you will need to request a new one.</p>`,
 	)
 }
