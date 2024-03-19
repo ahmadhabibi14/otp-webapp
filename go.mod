@@ -8,6 +8,7 @@ require (
 	github.com/gofiber/template/html/v2 v2.1.1
 	github.com/joho/godotenv v1.5.1
 	github.com/rs/zerolog v1.32.0
+	github.com/wneessen/go-mail v0.4.1
 )
 
 require (

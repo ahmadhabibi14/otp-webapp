@@ -5,6 +5,7 @@ import (
 	"otp-webapp/configs"
 	"otp-webapp/handlers/api"
 	"otp-webapp/handlers/page"
+	"otp-webapp/models/mailer"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -28,6 +29,7 @@ func NewWebServer(cfg configs.WebConf, lg *zerolog.Logger) *WebServer {
 }
 
 func (w *WebServer) Start() {
+	mlr := mailer.NewMailer(w.Log)
 	engine := html.New("./views", ".html")
 	app := fiber.New(fiber.Config{
 		AppName: w.AppName,
@@ -43,6 +45,7 @@ func (w *WebServer) Start() {
 
 	apiHandler := &api.Handler{
 		Log: w.Log,
+		Mailer: mlr,
 	}
 	pageHandler := &page.Handler{
 		Log: w.Log,

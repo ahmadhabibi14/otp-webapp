@@ -9,5 +9,5 @@ import (
 func ApiRoutes(app *fiber.App, apis *api.Handler) {
 	api := app.Group("/api")
 
-	_ = api
+	api.Post("/get-otp", apis.GetOTP)
 }
